@@ -1,17 +1,17 @@
 import 'package:flutter/material.dart';
 
-import 'home_page.dart';
+import 'list_of_devices.dart';
 
-void main() => runApp(MyApp());
+void main() => runApp(a_dicto_app());
 
-class MyApp extends StatelessWidget {
+class a_dicto_app extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
     debugShowCheckedModeBanner: false,
     theme: ThemeData(
       primarySwatch: Colors.orange,
     ),
-    home: MyHomePage(),
+    home: ListOfDevicesScreen(),
   );
 }
 
