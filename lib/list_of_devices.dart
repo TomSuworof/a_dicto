@@ -1,6 +1,7 @@
 import 'package:a_dicto/connected_device.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_blue/flutter_blue.dart';
+import 'package:system_setting/system_setting.dart';
 
 class ListOfDevicesScreen extends StatefulWidget {
   @override
@@ -24,8 +25,7 @@ class _ListOfDevicesScreenState extends State<ListOfDevicesScreen> {
   @override
   void initState() {
     super.initState();
-    flutterBlue.connectedDevices.asStream().listen((
-        List<BluetoothDevice> devices) {
+    flutterBlue.connectedDevices.asStream().listen((List<BluetoothDevice> devices) {
       for (BluetoothDevice device in devices) {
         _showDeviceToList(device);
       }
@@ -39,6 +39,26 @@ class _ListOfDevicesScreenState extends State<ListOfDevicesScreen> {
   }
 
   ListView _buildListViewOfDevices() {
+    // if (flutterBlue.state.isBroadcast == true) {
+    //   return ListView(
+    //       padding: const EdgeInsets.all(8),
+    //       children: [
+    //         Center(
+    //           child: Column(
+    //             children: [
+    //               Text("Bluetooth is off"),
+    //               RaisedButton(
+    //                   child: Text("Go to settings"),
+    //                   onPressed: () {
+    //                     SystemSetting.goto(SettingTarget.BLUETOOTH);
+    //                   }
+    //               )
+    //             ],
+    //           ),
+    //         )
+    //       ]
+    //   );
+    // }
     List<Container> containers = new List<Container>();
     for (BluetoothDevice device in devicesList) {
       containers.add(
@@ -91,14 +111,6 @@ class _ListOfDevicesScreenState extends State<ListOfDevicesScreen> {
       ],
     );
   }
-
-  // ListView _buildView() {
-  //   if (connectedDevice == null) {
-  //     return ;
-  //   } else {
-  //     return _buildListViewOfConnectedDevice();
-  //   }
-  // }
 
   @override
   Widget build(BuildContext context) => Scaffold(

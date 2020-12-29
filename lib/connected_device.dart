@@ -17,7 +17,8 @@ class ConnectedDeviceScreen extends StatefulWidget {
 }
 
 class _ConnectedDeviceScreenState extends State<ConnectedDeviceScreen> {
-  final Map<Guid, List<int>> readValues = new Map<Guid, List<int>>();
+  final Map<Guid, List<int>> characteristicsAndValues = new Map<Guid, List<int>>();
+  final Map<Guid, List<int>> descriptorsAndValues = new Map<Guid, List<int>>();
   final textController = TextEditingController();
 
   BluetoothDevice connectedDevice;
@@ -39,11 +40,14 @@ class _ConnectedDeviceScreenState extends State<ConnectedDeviceScreen> {
               onPressed: () async {
                 var sub = characteristic.value.listen((value) {
                   setState(() {
-                    readValues[characteristic.uuid] = value;
+                    characteristicsAndValues[characteristic.uuid] = value;
                   });
                 });
                 await characteristic.read();
                 sub.cancel();
+                for (BluetoothDescriptor descriptor in characteristic.descriptors) {
+                  descriptorsAndValues[descriptor.uuid] = await descriptor.read();
+                }
               },
             ),
           ),
@@ -79,7 +83,7 @@ class _ConnectedDeviceScreenState extends State<ConnectedDeviceScreen> {
                             child: Text("Send"),
                             onPressed: () {
                               characteristic.write(utf8.encode(textController.value.text));
-                              print("text: ${textController.value.text} was sent to: ${characteristic.uuid.toString()}");
+                              // print("text: ${textController.value.text} was sent to: ${characteristic.uuid.toString()}");
                               Navigator.pop(context);
                             },
                           ),
@@ -109,7 +113,7 @@ class _ConnectedDeviceScreenState extends State<ConnectedDeviceScreen> {
               child: Text('NOTIFY', style: TextStyle(color: Colors.white)),
               onPressed: () async {
                 characteristic.value.listen((value) {
-                  readValues[characteristic.uuid] = value;
+                  characteristicsAndValues[characteristic.uuid] = value;
                 });
                 await characteristic.setNotifyValue(true);
               },
@@ -122,13 +126,22 @@ class _ConnectedDeviceScreenState extends State<ConnectedDeviceScreen> {
   }
 
   ListView _buildListViewOfConnectedDevice() {
-    List<Container> containers = new List<Container>();
+    var containers = new List<Container>();
     for (BluetoothService service in bluetoothServices) {
-      List<Widget> characteristicsWidgets = new List<Widget>();
+      var characteristicsWidgets = new List<Widget>();
+      print(service.uuid);
       for (BluetoothCharacteristic characteristic in service.characteristics) {
-        List<int> bytes = readValues[characteristic.uuid];
-        print(bytes);
+        List<int> bytes = characteristicsAndValues[characteristic.uuid];
+        // print(bytes);
         String decodedValue = bytes == null ? "null" : decodeUtf8(bytes);
+
+        print('  ' + characteristic.uuid.toString() + ': ' + decodedValue);
+        // var descriptorsInfo = new List<Row>();
+        for (BluetoothDescriptor descriptor in characteristic.descriptors) {
+          // descriptorsInfo.add();
+          print('    ' + descriptor.uuid.toString() + ': ' + decodeUtf8(descriptor.lastValue));
+        }
+
         characteristicsWidgets.add(
           Align(
             alignment: Alignment.centerLeft,
