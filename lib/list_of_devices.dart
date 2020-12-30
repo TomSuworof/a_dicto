@@ -99,11 +99,12 @@ class _ListOfDevicesScreenState extends State<ListOfDevicesScreen> {
     return ListView(
         padding: const EdgeInsets.all(8),
         children: [
-          Center(
+          Container(
+            alignment: Alignment.center,
             child: Column(
               children: [
                 Text("Bluetooth is off"),
-                RaisedButton(
+                MaterialButton(
                     child: Text("Go to settings"),
                     onPressed: () {
                       SystemSetting.goto(SettingTarget.BLUETOOTH);

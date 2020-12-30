@@ -14,12 +14,13 @@ class ConnectedDeviceScreen extends StatefulWidget {
 }
 
 class _ConnectedDeviceScreenState extends State<ConnectedDeviceScreen> {
-  final Map<Guid, List<int>> characteristicsAndValues = new Map<Guid, List<int>>();
-  final Map<Guid, List<int>> descriptorsAndValues = new Map<Guid, List<int>>();
   final textController = TextEditingController();
 
   BluetoothDevice connectedDevice;
+
   List<BluetoothService> bluetoothServices;
+  Map<Guid, List<int>> characteristicsAndValues = new Map<Guid, List<int>>();
+  Map<Guid, List<int>> descriptorsAndValues = new Map<Guid, List<int>>();
 
   _ConnectedDeviceScreenState(this.connectedDevice) {
     connectedDevice.discoverServices().then((services) => bluetoothServices = services);
