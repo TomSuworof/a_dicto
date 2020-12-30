@@ -13,6 +13,7 @@ class _ListOfDevicesScreenState extends State<ListOfDevicesScreen> {
   final List<BluetoothDevice> devicesList = new List<BluetoothDevice>();
   BluetoothDevice connectedDevice;
   List<BluetoothService> bluetoothServices;
+  // var _connected = false;
 
   _showDeviceToList(final BluetoothDevice device) {
     if (!devicesList.contains(device)) {
@@ -22,43 +23,50 @@ class _ListOfDevicesScreenState extends State<ListOfDevicesScreen> {
     }
   }
 
-  @override
-  void initState() {
-    super.initState();
-    flutterBlue.connectedDevices.asStream().listen((List<BluetoothDevice> devices) {
-      for (BluetoothDevice device in devices) {
-        _showDeviceToList(device);
-      }
+  bool bluetoothIsOn() {
+    var connection = true;
+    flutterBlue.state.listen((state) {
+      connection = state == BluetoothState.turningOn;
     });
-    flutterBlue.scanResults.listen((List<ScanResult> results) {
-      for (ScanResult result in results) {
-        _showDeviceToList(result.device);
-      }
-    });
-    flutterBlue.startScan();
-  }
+    return connection;
+  } // it does not work - always true
 
   ListView _buildListViewOfDevices() {
-    // if (flutterBlue.state.isBroadcast == true) {
-    //   return ListView(
-    //       padding: const EdgeInsets.all(8),
-    //       children: [
-    //         Center(
-    //           child: Column(
-    //             children: [
-    //               Text("Bluetooth is off"),
-    //               RaisedButton(
-    //                   child: Text("Go to settings"),
-    //                   onPressed: () {
-    //                     SystemSetting.goto(SettingTarget.BLUETOOTH);
-    //                   }
-    //               )
-    //             ],
-    //           ),
-    //         )
-    //       ]
-    //   );
-    // }
+    if (bluetoothIsOn()) {
+      flutterBlue.connectedDevices.asStream().listen((
+          List<BluetoothDevice> devices) {
+        for (BluetoothDevice device in devices) {
+          _showDeviceToList(device);
+        }
+      });
+      flutterBlue.scanResults.listen((List<ScanResult> results) {
+        for (ScanResult result in results) {
+          _showDeviceToList(result.device);
+        }
+      });
+      flutterBlue.startScan();
+    }
+    print(bluetoothIsOn());
+    if (!bluetoothIsOn()) {
+      return ListView(
+          padding: const EdgeInsets.all(8),
+          children: [
+            Center(
+              child: Column(
+                children: [
+                  Text("Bluetooth is off"),
+                  RaisedButton(
+                      child: Text("Go to settings"),
+                      onPressed: () {
+                        SystemSetting.goto(SettingTarget.BLUETOOTH);
+                      }
+                  )
+                ],
+              ),
+            )
+          ]
+      );
+    }
     List<Container> containers = new List<Container>();
     for (BluetoothDevice device in devicesList) {
       containers.add(

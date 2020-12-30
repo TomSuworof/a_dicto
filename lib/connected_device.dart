@@ -136,10 +136,17 @@ class _ConnectedDeviceScreenState extends State<ConnectedDeviceScreen> {
         String decodedValue = bytes == null ? "null" : decodeUtf8(bytes);
 
         print('  ' + characteristic.uuid.toString() + ': ' + decodedValue);
-        // var descriptorsInfo = new List<Row>();
+        var descriptorsInfo = new List<Row>();
         for (BluetoothDescriptor descriptor in characteristic.descriptors) {
-          // descriptorsInfo.add();
-          print('    ' + descriptor.uuid.toString() + ': ' + decodeUtf8(descriptor.lastValue));
+          String uuidAndDecode = descriptor.uuid.toString() + ': ' + decodeUtf8(descriptor.lastValue);
+          print('    ' + uuidAndDecode);
+          descriptorsInfo.add(
+            Row(
+              children: [
+                Text(uuidAndDecode),
+              ],
+            )
+          );
         }
 
         characteristicsWidgets.add(
@@ -160,15 +167,22 @@ class _ConnectedDeviceScreenState extends State<ConnectedDeviceScreen> {
                     ..._buildReadWriteNotifyButton(characteristic),
                   ],
                 ),
+                // Row(
+                //   children: [
+                //     Text('Value: ' + bytes.toString()),
+                //   ],
+                // ),
                 Row(
                   children: [
-                    Text('Value: ' + bytes.toString()),
+                    Text('This characteristic is about: ' + decodedValue),
                   ],
                 ),
-                Row(
-                  children: [
-                    Text('Decoded value: ' + decodedValue),
-                  ],
+                Container(
+                  child: Column(
+                    children: [
+                      ...descriptorsInfo,
+                    ],
+                  ),
                 ),
                 Divider(),
               ],
