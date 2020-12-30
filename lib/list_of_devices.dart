@@ -13,7 +13,6 @@ class _ListOfDevicesScreenState extends State<ListOfDevicesScreen> {
   final List<BluetoothDevice> devicesList = new List<BluetoothDevice>();
   BluetoothDevice connectedDevice;
   List<BluetoothService> bluetoothServices;
-  // var _connected = false;
 
   _showDeviceToList(final BluetoothDevice device) {
     if (!devicesList.contains(device)) {
@@ -23,7 +22,7 @@ class _ListOfDevicesScreenState extends State<ListOfDevicesScreen> {
     }
   }
 
-  bool bluetoothIsOn() {
+  bool isBluetoothOn() {
     var connection = true;
     flutterBlue.state.listen((state) {
       connection = state == BluetoothState.turningOn;
@@ -32,41 +31,19 @@ class _ListOfDevicesScreenState extends State<ListOfDevicesScreen> {
   } // it does not work - always true
 
   ListView _buildListViewOfDevices() {
-    if (bluetoothIsOn()) {
-      flutterBlue.connectedDevices.asStream().listen((
-          List<BluetoothDevice> devices) {
-        for (BluetoothDevice device in devices) {
-          _showDeviceToList(device);
-        }
-      });
-      flutterBlue.scanResults.listen((List<ScanResult> results) {
-        for (ScanResult result in results) {
-          _showDeviceToList(result.device);
-        }
-      });
-      flutterBlue.startScan();
-    }
-    print(bluetoothIsOn());
-    if (!bluetoothIsOn()) {
-      return ListView(
-          padding: const EdgeInsets.all(8),
-          children: [
-            Center(
-              child: Column(
-                children: [
-                  Text("Bluetooth is off"),
-                  RaisedButton(
-                      child: Text("Go to settings"),
-                      onPressed: () {
-                        SystemSetting.goto(SettingTarget.BLUETOOTH);
-                      }
-                  )
-                ],
-              ),
-            )
-          ]
-      );
-    }
+    flutterBlue.connectedDevices.asStream().listen((
+        List<BluetoothDevice> devices) {
+      for (BluetoothDevice device in devices) {
+        _showDeviceToList(device);
+      }
+    });
+    flutterBlue.scanResults.listen((List<ScanResult> results) {
+      for (ScanResult result in results) {
+        _showDeviceToList(result.device);
+      }
+    });
+    flutterBlue.startScan();
+
     List<Container> containers = new List<Container>();
     for (BluetoothDevice device in devicesList) {
       containers.add(
@@ -99,10 +76,8 @@ class _ListOfDevicesScreenState extends State<ListOfDevicesScreen> {
                     connectedDevice = device;
                   });
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) => ConnectedDeviceScreen(
-                        connectedDevice: connectedDevice,
-                        bluetoothServices: bluetoothServices,
-                      )
+                      builder: (context) =>
+                          ConnectedDeviceScreen(connectedDevice: connectedDevice)
                   ));
                 },
               ),
@@ -120,12 +95,42 @@ class _ListOfDevicesScreenState extends State<ListOfDevicesScreen> {
     );
   }
 
+  ListView _buildBluetoothOffPage() {
+    return ListView(
+        padding: const EdgeInsets.all(8),
+        children: [
+          Center(
+            child: Column(
+              children: [
+                Text("Bluetooth is off"),
+                RaisedButton(
+                    child: Text("Go to settings"),
+                    onPressed: () {
+                      SystemSetting.goto(SettingTarget.BLUETOOTH);
+                    }
+                )
+              ],
+            ),
+          )
+        ]
+    );
+  }
+
+  ListView _buildMainPage() {
+    if (isBluetoothOn()) {
+      return _buildListViewOfDevices();
+    } else {
+      return _buildBluetoothOffPage();
+    }
+  }
+
   @override
-  Widget build(BuildContext context) => Scaffold(
-    appBar: AppBar(
-      title: Text("A_Dicto"),
-      backgroundColor: Color.fromRGBO(0xFD, 0xAC, 0x53, 1),
-    ),
-    body: _buildListViewOfDevices(),
-  );
+  Widget build(BuildContext context) =>
+      Scaffold(
+        appBar: AppBar(
+          title: Text("A_Dicto"),
+          backgroundColor: Color.fromRGBO(0xFD, 0xAC, 0x53, 1),
+        ),
+        body: _buildMainPage(),
+      );
 }

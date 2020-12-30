@@ -6,14 +6,11 @@ import 'package:utf/utf.dart';
 
 class ConnectedDeviceScreen extends StatefulWidget {
   final BluetoothDevice connectedDevice;
-  final List<BluetoothService> bluetoothServices;
 
-  ConnectedDeviceScreen({
-    @required this.connectedDevice,
-    @required this.bluetoothServices});
+  ConnectedDeviceScreen({@required this.connectedDevice});
 
   @override
-  State<StatefulWidget> createState() => _ConnectedDeviceScreenState(connectedDevice, bluetoothServices);
+  State<StatefulWidget> createState() => _ConnectedDeviceScreenState(connectedDevice);
 }
 
 class _ConnectedDeviceScreenState extends State<ConnectedDeviceScreen> {
@@ -24,7 +21,9 @@ class _ConnectedDeviceScreenState extends State<ConnectedDeviceScreen> {
   BluetoothDevice connectedDevice;
   List<BluetoothService> bluetoothServices;
 
-  _ConnectedDeviceScreenState(this.connectedDevice, this.bluetoothServices);
+  _ConnectedDeviceScreenState(this.connectedDevice) {
+    connectedDevice.discoverServices().then((services) => bluetoothServices = services);
+  }
 
   List<ButtonTheme> _buildReadWriteNotifyButton(BluetoothCharacteristic characteristic) {
     List<ButtonTheme> buttons = new List<ButtonTheme>();
