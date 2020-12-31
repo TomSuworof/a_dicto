@@ -125,21 +125,26 @@ class _ConnectedDeviceScreenState extends State<ConnectedDeviceScreen> {
     return buttons;
   }
 
+  String decode(List<int> bytes) {
+    return decodeUtf8(bytes);
+  } // some strange symbols
+
   ListView _buildListViewOfConnectedDevice() {
     var containers = new List<Container>();
     for (BluetoothService service in bluetoothServices) {
       var characteristicsWidgets = new List<Widget>();
       print(service.uuid);
+
       for (BluetoothCharacteristic characteristic in service.characteristics) {
         List<int> bytes = characteristicsAndValues[characteristic.uuid];
-        // print(bytes);
-        String decodedValue = bytes == null ? "null" : decodeUtf8(bytes);
-
+        String decodedValue = bytes == null ? "null" : decode(bytes);
         print('  ' + characteristic.uuid.toString() + ': ' + decodedValue);
+
         var descriptorsInfo = new List<Row>();
         for (BluetoothDescriptor descriptor in characteristic.descriptors) {
-          String uuidAndDecode = descriptor.uuid.toString() + ': ' + decodeUtf8(descriptor.lastValue);
+          String uuidAndDecode = descriptor.uuid.toString() + ': ' + decode(descriptor.lastValue);
           print('    ' + uuidAndDecode);
+
           descriptorsInfo.add(
             Row(
               children: [
