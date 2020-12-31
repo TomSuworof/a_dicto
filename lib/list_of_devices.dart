@@ -50,16 +50,16 @@ class _ListOfDevicesScreenState extends State<ListOfDevicesScreen> {
         Container(
           height: 50,
           child: Row(
-            children: <Widget>[
+            children: [
               Expanded(
                 child: Column(
-                  children: <Widget>[
+                  children: [
                     Text(device.name == '' ? '(unknown device)' : device.name),
                     Text(device.id.toString()),
                   ],
                 ),
               ),
-              RaisedButton(
+              MaterialButton(
                 child: Text('Connect'),
                 onPressed: () async {
                   flutterBlue.stopScan();
@@ -76,8 +76,7 @@ class _ListOfDevicesScreenState extends State<ListOfDevicesScreen> {
                     connectedDevice = device;
                   });
                   Navigator.of(context).push(MaterialPageRoute(
-                      builder: (context) =>
-                          ConnectedDeviceScreen(connectedDevice: connectedDevice)
+                      builder: (context) => ConnectedDeviceScreen(connectedDevice: connectedDevice)
                   ));
                 },
               ),
@@ -89,38 +88,36 @@ class _ListOfDevicesScreenState extends State<ListOfDevicesScreen> {
 
     return ListView(
       padding: const EdgeInsets.all(8),
-      children: <Widget>[
+      children: [
         ...containers,
       ],
     );
   }
 
-  ListView _buildBluetoothOffPage() {
-    return ListView(
-        padding: const EdgeInsets.all(8),
+  Container _buildBluetoothOffPage() {
+    return Container(
+      alignment: Alignment.center,
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Container(
-            alignment: Alignment.center,
-            child: Column(
-              children: [
-                Text("Bluetooth is off"),
-                MaterialButton(
-                    child: Text("Go to settings"),
-                    onPressed: () {
-                      SystemSetting.goto(SettingTarget.BLUETOOTH);
-                    }
-                )
-              ],
-            ),
+          Text("Bluetooth is off"),
+          MaterialButton(
+              child: Text("Go to settings"),
+              onPressed: () {
+                SystemSetting.goto(SettingTarget.BLUETOOTH);
+              }
           )
-        ]
+        ],
+      ),
     );
   }
 
-  ListView _buildMainPage() {
+  Widget _buildMainPage() {
     if (isBluetoothOn()) {
+      print('--------------------------bluetooth is on!');
       return _buildListViewOfDevices();
     } else {
+      print('--------------------------bluetooth is off!');
       return _buildBluetoothOffPage();
     }
   }

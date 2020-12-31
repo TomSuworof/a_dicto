@@ -36,7 +36,7 @@ class _ConnectedDeviceScreenState extends State<ConnectedDeviceScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: RaisedButton(
-              child: Text('READ', style: TextStyle(color: Colors.white)),
+              child: Text('READ'),
               onPressed: () async {
                 var sub = characteristic.value.listen((value) {
                   setState(() {
@@ -62,7 +62,7 @@ class _ConnectedDeviceScreenState extends State<ConnectedDeviceScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: RaisedButton(
-              child: Text('WRITE', style: TextStyle(color: Colors.white)),
+              child: Text('WRITE'),
               onPressed: () async {
                 await showDialog(
                     context: context,
@@ -79,7 +79,7 @@ class _ConnectedDeviceScreenState extends State<ConnectedDeviceScreen> {
                           ],
                         ),
                         actions: <Widget>[
-                          FlatButton(
+                          MaterialButton(
                             child: Text("Send"),
                             onPressed: () {
                               characteristic.write(utf8.encode(textController.value.text));
@@ -87,7 +87,7 @@ class _ConnectedDeviceScreenState extends State<ConnectedDeviceScreen> {
                               Navigator.pop(context);
                             },
                           ),
-                          FlatButton(
+                          MaterialButton(
                             child: Text("Cancel"),
                             onPressed: () {
                               Navigator.pop(context);
@@ -110,7 +110,7 @@ class _ConnectedDeviceScreenState extends State<ConnectedDeviceScreen> {
           child: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 4),
             child: RaisedButton(
-              child: Text('NOTIFY', style: TextStyle(color: Colors.white)),
+              child: Text('NOTIFY'),
               onPressed: () async {
                 characteristic.value.listen((value) {
                   characteristicsAndValues[characteristic.uuid] = value;
